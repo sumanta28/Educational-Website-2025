@@ -519,6 +519,15 @@ type Course = {
   syllabus?: string;
 };
 
+type CourseDocument = {
+  $id: string;
+  title?: string;
+  description?: string;
+  Price?: number;
+  category?: string;
+  ImageUrl?: string;
+  syllabus?: string;
+};
 const rowsPerPage = 5;
 
 // Theme
@@ -550,15 +559,15 @@ const ManageCourses: React.FC = () => {
         APPWRITE_CONFIG.COURSES_COLLECTION_ID,
         [Query.limit(rowsPerPage), Query.offset(offset)]
       );
-      const mapped = res.documents.map((doc: any) => ({
-        $id: doc.$id,
-        title: doc.title || "",
-        description: doc.description || "",
-        Price: Number(doc.Price ?? 0),
-        category: doc.category || "",
-        ImageUrl: doc.ImageUrl || "/placeholder.png",
-        syllabus: doc.syllabus || "Not provided",
-      }));
+     const mapped: Course[] = res.documents.map((doc: CourseDocument) => ({
+  $id: doc.$id,
+  title: doc.title ?? "",
+  description: doc.description ?? "",
+  Price: Number(doc.Price ?? 0),
+  category: doc.category ?? "",
+  ImageUrl: doc.ImageUrl ?? "/placeholder.png",
+  syllabus: doc.syllabus ?? "Not provided",
+}));
       setCourses(mapped);
       setTotal(res.total);
     } catch (err) {

@@ -928,24 +928,90 @@ const EducationalWebsite: React.FC = () => {
         </Dialog>
       </Container>
 
-       {/* Instructors Section */}
-       {instructorsData.length > 0 && (
-        <Container id="instructors" maxWidth="lg" sx={{ py: 6, bgcolor: "transparent" }}>
-          <Typography variant="h4" textAlign="center" gutterBottom {...sectionTypographyProps}>Learn from Industry Experts</Typography>
-          <Typography variant="body2" textAlign="center" color="text.secondary" sx={{ mb: 4 }}>Our instructors bring real-world experience to every lesson</Typography>
+      {/* Instructors Section */}
+      {instructorsData.length > 0 && (
+        <Container
+          id="instructors"
+          maxWidth="lg"
+          sx={{ py: 6, bgcolor: "transparent" }}
+        >
+          <Typography
+            variant="h4"
+            textAlign="center"
+            gutterBottom
+            {...sectionTypographyProps}
+          >
+            Learn from Industry Experts
+          </Typography>
+          <Typography
+            variant="body2"
+            textAlign="center"
+            color="text.secondary"
+            sx={{ mb: 4 }}
+          >
+            Our instructors bring real-world experience to every lesson
+          </Typography>
           <Grid container spacing={2} justifyContent="center">
             {instructorsData.slice(0, 4).map((instructor) => (
-              <Grid size={{xs:12, sm:6, md:3}} key={instructor.$id}>
-                <Card sx={{ textAlign: "center", p: 2, height: "100%", bgcolor: "background.paper", boxShadow: 3, borderRadius: 2 }}>
-                  <Avatar src={instructor.profileImageUrl || instructor.profileImage || "/default-avatar.png"} sx={{ width: 90, height: 90, mx: "auto", mb: 1 }} />
-                  <Typography variant="subtitle1" gutterBottom noWrap>{instructor.name}</Typography>
-                  <Typography variant="caption" color="primary.main" display="block" gutterBottom>{instructor.title}</Typography>
-                  <Rating size="small" value={instructor.rating || 0} readOnly sx={{ mb: 1 }} />
-                  <Typography variant="body2" color="text.secondary" noWrap>{instructor.bio}</Typography>
-                  <Box sx={{ display: "flex", justifyContent: "center", gap: 0.5, flexWrap: "wrap", mt: 1 }}>
-                    <Chip label={`${instructor.experience || 0}+ yrs`} size="small" />
-                    <Chip label={`${instructor.studentsCount || 0}+ students`} size="small" />
-                    {instructor.specialities?.map((spec, idx) => (<Chip key={idx} label={spec} size="small" />))}
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={instructor.$id}>
+                <Card
+                  sx={{
+                    textAlign: "center",
+                    p: 2,
+                    height: "100%",
+                    bgcolor: "background.paper",
+                    boxShadow: 3,
+                    borderRadius: 2,
+                  }}
+                >
+                  <Avatar
+                    src={
+                      instructor.profileImageUrl ||
+                      instructor.profileImage ||
+                      "/default-avatar.png"
+                    }
+                    sx={{ width: 90, height: 90, mx: "auto", mb: 1 }}
+                  />
+                  <Typography variant="subtitle1" gutterBottom noWrap>
+                    {instructor.name}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="primary.main"
+                    display="block"
+                    gutterBottom
+                  >
+                    {instructor.title}
+                  </Typography>
+                  <Rating
+                    size="small"
+                    value={instructor.rating || 0}
+                    readOnly
+                    sx={{ mb: 1 }}
+                  />
+                  <Typography variant="body2" color="text.secondary" noWrap>
+                    {instructor.bio}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 0.5,
+                      flexWrap: "wrap",
+                      mt: 1,
+                    }}
+                  >
+                    <Chip
+                      label={`${instructor.experience || 0}+ yrs`}
+                      size="small"
+                    />
+                    <Chip
+                      label={`${instructor.studentsCount || 0}+ students`}
+                      size="small"
+                    />
+                    {instructor.specialities?.map((spec, idx) => (
+                      <Chip key={idx} label={spec} size="small" />
+                    ))}
                   </Box>
                 </Card>
               </Grid>

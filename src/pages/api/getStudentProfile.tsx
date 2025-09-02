@@ -5,6 +5,7 @@ const client = new Client()
   .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
   .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
   .setKey(process.env.APPWRITE_API_KEY!);
+
 const databases = new Databases(client);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -26,8 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       return res.status(200).json({});
     }
-  } catch (err: any) {
-    console.error("❌ Error fetching profile:", err.message, err);
-    return res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("❌ Error fetching profile:", err.message, err);
+      return res.status(500).json({ error: err.message });
+    }
+    console.error("❌ Unknown error fetching profile:", err);
+    return res.status(500).json({ error: "An unknown error occurred" });
   }
 }
