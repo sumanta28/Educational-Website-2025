@@ -534,202 +534,209 @@ export default function AddCourse() {
     }
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Head>
-        <title>Add Course</title>
-      </Head>
+return (
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <Head>
+      <title>Add Course</title>
+    </Head>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "linear-gradient(to bottom, #87CEEB, #ffffff)",
-          minHeight: "100vh",
-          py: 8,
-        }}
-      >
-        <Box sx={{ maxWidth: 900, width: "100%", px: 2 }}>
-          <Card
-            sx={{
-              borderRadius: 4,
-              boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-              overflow: "hidden",
-              backgroundColor: "background.paper",
-              transition: "transform 0.3s, box-shadow 0.3s",
-              "&:hover": {
-                transform: "translateY(-5px)",
-                boxShadow: "0 8px 20px rgba(0,0,0,0.2)",
-              },
-            }}
-          >
-            <CardHeader
-              title={
-                <Typography variant="h4" fontWeight={700} color="primary">
-                  Create a New Course
-                </Typography>
-              }
-              subheader={
-                <Typography color="text.secondary">
-                  Fill in the details below and upload a thumbnail
-                </Typography>
-              }
-            />
-            <CardContent>
-              <Box
-                component="form"
-                onSubmit={handleSubmit(onSubmit)}
-                noValidate
-                sx={{ mt: 2 }}
-              >
-                <Stack spacing={3}>
-                  <Controller
-                    name="title"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <TextField
-                        {...field}
-                        label="Course Title"
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        fullWidth
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="description"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <TextField
-                        {...field}
-                        label="Description"
-                        multiline
-                        minRows={4}
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        fullWidth
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="syllabus"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <TextField
-                        {...field}
-                        label="Syllabus"
-                        multiline
-                        minRows={3}
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        fullWidth
-                      />
-                    )}
-                  />
-                  <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                    <Controller
-                      name="Price"
-                      control={control}
-                      render={({ field, fieldState }) => (
-                        <TextField
-                          {...field}
-                          type="number"
-                          label="Price (₹)"
-                          error={!!fieldState.error}
-                          helperText={fieldState.error?.message}
-                          fullWidth
-                          inputProps={{ min: 0 }}
-                        />
-                      )}
-                    />
-                    <Controller
-                      name="category"
-                      control={control}
-                      render={({ field, fieldState }) => (
-                        <TextField
-                          {...field}
-                          label="Category"
-                          error={!!fieldState.error}
-                          helperText={fieldState.error?.message}
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </Stack>
-
-                  <Divider />
-
-                  <Button
-                    variant="outlined"
-                    component="label"
-                    sx={{
-                      textTransform: "none", // keeps text normal case
-                      borderRadius: 2,
-                      px: 3,
-                      py: 1.1,
-                      fontWeight: 500,
-                      fontSize: "0.95rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(0,0,0,0.04)",
-                      },
-                    }}
-                  >
-                    Select Image
-                    <input
-                      hidden
-                      accept="image/*"
-                      type="file"
-                      onChange={(e) =>
-                        onSelectFile(e.target.files?.[0] ?? null)
-                      }
-                    />
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    disabled={createCourse.isPending}
-                    sx={{
-                      alignSelf: "center", // change from flex-start to center
-                      px: 4,
-                      py: 1.25,
-                      borderRadius: 2,
-                    }}
-                  >
-                    {createCourse.isPending ? (
-                      <Stack direction="row" gap={1} alignItems="center">
-                        <CircularProgress size={20} />
-                        <span>Saving…</span>
-                      </Stack>
-                    ) : (
-                      "Add Course"
-                    )}
-                  </Button>
-                </Stack>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-      </Box>
-
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={3000}
-        onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity={snack.sev}
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          variant="filled"
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "linear-gradient(to bottom, #87CEEB, #ffffff)",
+        minHeight: "100vh",
+        py: 8,
+      }}
+    >
+      <Box sx={{ maxWidth: 900, width: "100%", px: 2 }}>
+        <Card
+          sx={{
+            borderRadius: 4,
+            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            overflow: "hidden",
+            backgroundColor: "background.paper",
+            transition: "transform 0.3s, box-shadow 0.3s",
+            "&:hover": {
+              transform: "translateY(-5px)",
+              boxShadow: "0 8px 20px rgba(0,0,0,0.2)",
+            },
+          }}
         >
-          {snack.msg}
-        </Alert>
-      </Snackbar>
-    </ThemeProvider>
-  );
+          <CardHeader
+            title={
+              <Typography variant="h4" fontWeight={700} color="primary">
+                Create a New Course
+              </Typography>
+            }
+           
+          />
+          <CardContent>
+            <Box
+              component="form"
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+              sx={{ mt: 2 }}
+            >
+              <Stack spacing={3}>
+                <Controller
+                  name="title"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      label="Course Title"
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      fullWidth
+                    />
+                  )}
+                />
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      label="Description"
+                      multiline
+                      minRows={4}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      fullWidth
+                    />
+                  )}
+                />
+                <Controller
+                  name="syllabus"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      label="Syllabus"
+                      multiline
+                      minRows={3}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      fullWidth
+                    />
+                  )}
+                />
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <Controller
+                    name="Price"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        {...field}
+                        type="number"
+                        label="Price (₹)"
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        fullWidth
+                        inputProps={{ min: 0 }}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="category"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        {...field}
+                        label="Category"
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Stack>
+
+                <Divider />
+
+                {/* Image upload button */}
+                <Button
+                  variant="outlined"
+                  component="label"
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2,
+                    px: 3,
+                    py: 1.1,
+                    fontWeight: 500,
+                    fontSize: "0.95rem",
+                    "&:hover": {
+                      backgroundColor: "rgba(0,0,0,0.04)",
+                    },
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  Select Image
+                  <input
+                    hidden
+                    accept="image/*"
+                    type="file"
+                    onChange={(e) =>
+                      onSelectFile(e.target.files?.[0] ?? null)
+                    }
+                  />
+                  {preview && (
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      style={{
+                        width: "100%",
+                        maxHeight: 260,
+                        objectFit: "cover",
+                        display: "block",
+                        borderRadius: 8,
+                      }}
+                    />
+                  )}
+                </Button>
+
+                {/* Submit button */}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  sx={{ py: 1.2, fontWeight: 600 }}
+                >
+                  {createCourse.isPending ? (
+                    <Stack direction="row" gap={1} alignItems="center">
+                      <CircularProgress size={20} />
+                      <span>Saving…</span>
+                    </Stack>
+                  ) : (
+                    "Add Course"
+                  )}
+                </Button>
+              </Stack>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
+    </Box>
+
+    <Snackbar
+      open={snack.open}
+      autoHideDuration={3000}
+      onClose={() => setSnack((s) => ({ ...s, open: false }))}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+    >
+      <Alert
+        severity={snack.sev}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        variant="filled"
+      >
+        {snack.msg}
+      </Alert>
+    </Snackbar>
+  </ThemeProvider>
+);
 }
