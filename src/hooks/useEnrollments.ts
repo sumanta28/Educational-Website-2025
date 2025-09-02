@@ -181,21 +181,22 @@ export function useEnrollments(userId?: string) {
   };
 
   // Update enrollment (progress, status, etc.)
-  const updateEnrollment = async (id: string, data: Partial<Enrollment>) => {
-    try {
-      const doc = await databases.updateDocument(
-        DATABASE_ID,
-        ENROLLMENTS_COLLECTION_ID,
-        id,
-        data
-      );
-      setEnrollments((prev) =>
-        prev.map((e) => (e.$id === id ? (doc as unknown as Enrollment) : e))
-      );
-    } catch (err) {
-      console.error("Error updating enrollment:", err);
-    }
-  };
+  const updateEnrollment = async (id: string, data: Partial<Omit<Enrollment, "$id">>) => {
+  try {
+    const doc = await databases.updateDocument(
+      DATABASE_ID,
+      ENROLLMENTS_COLLECTION_ID,
+      id,
+      data
+    );
+    setEnrollments((prev) =>
+      prev.map((e) => (e.$id === id ? (doc as unknown as Enrollment) : e))
+    );
+  } catch (err) {
+    console.error("Error updating enrollment:", err);
+  }
+};
+
 
   // Delete enrollment
   const deleteEnrollment = async (id: string) => {
