@@ -193,7 +193,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const createStudentProfileIfMissing = async (acc: any) => {
+  type AccountType = {
+  $id: string;
+  name: string;
+  email: string;
+};
+  const createStudentProfileIfMissing = async (acc:  AccountType) => {
     const existing = await getStudentProfile(acc.$id);
     if (existing) return existing;
 
