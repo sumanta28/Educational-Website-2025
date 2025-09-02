@@ -68,7 +68,6 @@
 //   syllabus?: string;
 // }
 
-
 // const CoursesComponent: React.FC = () => {
 //   const [courses, setCourses] = useState<Course[]>([]);
 //   const [loading, setLoading] = useState(true);
@@ -404,9 +403,6 @@
 
 // export default CoursesComponent;
 
-
-
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -491,7 +487,6 @@ interface Course extends Partial<Models.Document> {
   syllabus?: string;
 }
 
-
 const CoursesComponent: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -503,7 +498,9 @@ const CoursesComponent: React.FC = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 9;
   const { cart, addToCart } = useCart();
-  const [enrolledCourses, setEnrolledCourses] = useState<Set<string>>(new Set());
+  const [enrolledCourses, setEnrolledCourses] = useState<Set<string>>(
+    new Set()
+  );
   const [openModal, setOpenModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
@@ -531,7 +528,6 @@ const CoursesComponent: React.FC = () => {
     fetchUserEnrollments();
   }, [isLoggedIn, user]);
 
-
   // Fetch courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -542,19 +538,25 @@ const CoursesComponent: React.FC = () => {
           [Query.limit(100)]
         );
 
-     const mappedCourses: Course[] = response.documents.map((doc: Models.Document) => {
-  const courseData = doc as unknown as CourseDoc; // ✅ safe cast
-  return {
-    $id: doc.$id,
-    title: courseData.title || "Untitled",
-    description: courseData.description || "No description",
-    Price: courseData.Price,
-    ImageUrl: courseData.ImageUrl,
-    category: courseData.category || "General",
-    syllabus: courseData.syllabus || "No syllabus available",
-  };
-});
-
+        // Replace the CourseDoc mapping section with this safe mapping
+        const mappedCourses: Course[] = response.documents.map(
+          (doc: Models.Document) => {
+            const courseData = doc as unknown as CourseDoc; // safe cast
+            return {
+              $id: doc.$id,
+              $createdAt: doc.$createdAt,
+              $updatedAt: doc.$updatedAt,
+              $permissions: doc.$permissions,
+              $sequence: doc.$sequence ?? 0, // ensure $sequence is a number
+              title: courseData.title || "Untitled",
+              description: courseData.description || "No description",
+              Price: courseData.Price,
+              ImageUrl: courseData.ImageUrl,
+              category: courseData.category || "General",
+              syllabus: courseData.syllabus || "No syllabus available",
+            };
+          }
+        );
 
         setCourses(mappedCourses);
       } catch (err) {
@@ -610,7 +612,10 @@ const CoursesComponent: React.FC = () => {
     page * itemsPerPage
   );
 
-  const categories = ["All", ...Array.from(new Set(courses.map((c) => c.category)))];
+  const categories = [
+    "All",
+    ...Array.from(new Set(courses.map((c) => c.category))),
+  ];
 
   return (
     <ThemeProvider theme={theme}>
