@@ -288,6 +288,7 @@ interface AppwriteDocument {
 interface Course extends AppwriteDocument {
   title: string;
   description?: string;
+  $sequence: number;
 }
 
 interface SearchSuggestionsProps {
@@ -324,15 +325,16 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ searchTerm, setSe
       const endRange = term.slice(0, -1) + nextChar;
 
       const response = await databases.listDocuments<Course>(
-        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_COURSES_COLLECTION_ID!,
-        [
-          Query.orderAsc("title"),
-          Query.limit(5),
-          Query.greaterThanEqual("title", term),
-          Query.lessThan("title", endRange),
-        ]
-      );
+  process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+  process.env.NEXT_PUBLIC_APPWRITE_COURSES_COLLECTION_ID!,
+  [
+    Query.orderAsc("title"),
+    Query.limit(5),
+    Query.greaterThanEqual("title", term),
+    Query.lessThan("title", endRange),
+  ]
+);
+
 
       setSuggestions(response.documents);
     } catch (err) {
