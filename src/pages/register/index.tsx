@@ -46,37 +46,39 @@ const Register: React.FC = () => {
     setFullName(`${firstName.trim()} ${lastName.trim()}`.trim());
   }, [firstName, lastName]);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess(false);
+ const handleRegister = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setSuccess(false);
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+  if (password !== confirmPassword) {
+    setError("Passwords do not match.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // 1️⃣ Create Appwrite user
+    await account.create(ID.unique(), email, password, fullName);
+
+    setSuccess(true);
+
+    // 2️⃣ Redirect to login page after 2 seconds
+    setTimeout(() => router.push("/login"), 2000);
+  } catch (err: unknown) {
+    const error = err as { code?: number; message?: string };
+    console.error("Appwrite Error:", error);
+    if (error.code === 409) {
+      setError("This email is already registered. Please login.");
+    } else {
+      setError(error.message || "Registration failed. Please try again.");
     }
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-
-    try {
-      // 1️⃣ Create Appwrite user
-      await account.create(ID.unique(), email, password, fullName);
-
-      setSuccess(true);
-
-      // 2️⃣ Redirect to login page after 2 seconds
-      setTimeout(() => router.push("/login"), 2000);
-    } catch (err: any) {
-      console.error("Appwrite Error:", err);
-      if (err?.code === 409) {
-        setError("This email is already registered. Please login.");
-      } else {
-        setError(err.message || "Registration failed. Please try again.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <Box
