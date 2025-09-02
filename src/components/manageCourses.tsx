@@ -464,6 +464,7 @@
 // export default ManageCourses;
 
 
+
 "use client";
 
 import * as React from "react";
@@ -494,7 +495,6 @@ import {
   createTheme,
   CssBaseline,
 } from "@mui/material";
-import { useQuery, useMutation, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { databases, storage } from "@/lib/appwrite";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -502,7 +502,8 @@ import { Query, ID } from "appwrite";
 
 const APPWRITE_CONFIG = {
   DATABASE_ID: process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-  COURSES_COLLECTION_ID: process.env.NEXT_PUBLIC_APPWRITE_COURSES_COLLECTION_ID!,
+  COURSES_COLLECTION_ID:
+    process.env.NEXT_PUBLIC_APPWRITE_COURSES_COLLECTION_ID!,
   BUCKET_ID: process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
   ENDPOINT: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!,
   PROJECT_ID: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!,
@@ -518,20 +519,9 @@ type Course = {
   syllabus?: string;
 };
 
-type CourseDoc = {
-  $id: string;
-  title?: string;
-  description?: string;
-  Price?: number | string;
-  category?: string;
-  ImageUrl?: string;
-  syllabus?: string;
-};
-
-type CoursesData = { courses: Course[]; total: number };
-
 const rowsPerPage = 5;
 
+// Theme
 const theme = createTheme({
   palette: {
     primary: { main: "#003366" },
@@ -543,23 +533,24 @@ const theme = createTheme({
 });
 
 const ManageCourses: React.FC = () => {
-  const qc = useQueryClient();
-  const [snackbar, setSnackbar] = React.useState<string | null>(null);
+  const [courses, setCourses] = React.useState<Course[]>([]);
+  const [total, setTotal] = React.useState<number>(0);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [snackbar, setSnackbar] = React.useState<string | null>(null);
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<Course | null>(null);
 
-  const { data, isLoading, error }: UseQueryResult<CoursesData, Error> = useQuery({
-    queryKey: ["courses", currentPage],
-    queryFn: async () => {
-      const offset = (currentPage - 1) * rowsPerPage;
+  const fetchCourses = async (page: number) => {
+    setLoading(true);
+    try {
+      const offset = (page - 1) * rowsPerPage;
       const res = await databases.listDocuments(
         APPWRITE_CONFIG.DATABASE_ID,
         APPWRITE_CONFIG.COURSES_COLLECTION_ID,
         [Query.limit(rowsPerPage), Query.offset(offset)]
       );
-
-      const courses: Course[] = res.documents.map((doc: CourseDoc) => ({
+      const mapped = res.documents.map((doc: any) => ({
         $id: doc.$id,
         title: doc.title || "",
         description: doc.description || "",
@@ -568,46 +559,54 @@ const ManageCourses: React.FC = () => {
         ImageUrl: doc.ImageUrl || "/placeholder.png",
         syllabus: doc.syllabus || "Not provided",
       }));
+      setCourses(mapped);
+      setTotal(res.total);
+    } catch (err) {
+      console.error(err);
+      setSnackbar("Failed to fetch courses.");
+    }
+    setLoading(false);
+  };
 
-      return { courses, total: res.total };
-    },
-    placeholderData: { courses: [], total: 0 },
-    onError: () => setSnackbar("Failed to fetch courses."),
-  });
+  React.useEffect(() => {
+    fetchCourses(currentPage);
+  }, [currentPage]);
 
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / rowsPerPage)) : 1;
-
-  const deleteMutation = useMutation<void, unknown, string>({
-    mutationFn: async (id) => {
+  const deleteCourse = async (id: string) => {
+    try {
       await databases.deleteDocument(
         APPWRITE_CONFIG.DATABASE_ID,
         APPWRITE_CONFIG.COURSES_COLLECTION_ID,
         id
       );
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["courses"] });
       setSnackbar("Course deleted successfully!");
-    },
-    onError: () => setSnackbar("Failed to delete course."),
-  });
+      fetchCourses(currentPage);
+    } catch (err) {
+      console.error(err);
+      setSnackbar("Failed to delete course.");
+    }
+  };
 
-  const updateMutation = useMutation<void, unknown, { id: string; updates: Partial<Omit<Course, "$id">> }>({
-    mutationFn: async (payload) => {
+  const updateCourse = async (updatedCourse: Course) => {
+    try {
+      const { $id, title, description, Price, category, syllabus, ImageUrl } =
+        updatedCourse;
       await databases.updateDocument(
         APPWRITE_CONFIG.DATABASE_ID,
         APPWRITE_CONFIG.COURSES_COLLECTION_ID,
-        payload.id,
-        payload.updates
+        $id,
+        { title, description, Price, category, syllabus, ImageUrl }
       );
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["courses"] });
       setOpen(false);
       setSnackbar("Course updated successfully!");
-    },
-    onError: () => setSnackbar("Failed to update course."),
-  });
+      fetchCourses(currentPage);
+    } catch (err) {
+      console.error(err);
+      setSnackbar("Failed to update course.");
+    }
+  };
+
+  const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
 
   return (
     <ThemeProvider theme={theme}>
@@ -616,32 +615,45 @@ const ManageCourses: React.FC = () => {
         <title>Manage Courses</title>
       </Head>
 
-      {/* Gradient background */}
-      <Box sx={{ background: "linear-gradient(to bottom, #87CEEB, #ffffff)", minHeight: "100vh", py: 8 }}>
+      <Box
+        sx={{
+          background: "linear-gradient(to bottom, #87CEEB, #ffffff)",
+          minHeight: "100vh",
+          py: 8,
+        }}
+      >
         <Box sx={{ maxWidth: 1300, mx: "auto", px: 2 }}>
           <Stack direction="row" justifyContent="space-between" mb={3}>
             <Typography variant="h4" fontWeight={700} color="primary">
               Manage Courses
             </Typography>
-            <Button component={NextLink} href="/courses" variant="contained" color="secondary">
+            <Button
+              component={NextLink}
+              href="/courses"
+              variant="contained"
+              color="secondary"
+            >
               Return
             </Button>
           </Stack>
 
-          {isLoading ? (
+          {loading ? (
             <Stack alignItems="center" mt={4}>
               <CircularProgress color="primary" />
               <Typography variant="body2" sx={{ mt: 2 }}>
                 Loading courses...
               </Typography>
             </Stack>
-          ) : error ? (
+          ) : courses.length === 0 ? (
             <Typography color="error" align="center">
-              Failed to load courses.
+              No courses found.
             </Typography>
           ) : (
             <>
-              <TableContainer component={Paper} sx={{ border: "1px solid #ddd", backgroundColor: "background.paper" }}>
+              <TableContainer
+                component={Paper}
+                sx={{ border: "1px solid #ddd", backgroundColor: "background.paper" }}
+              >
                 <Table>
                   <TableHead sx={{ backgroundColor: "#e6f0ff" }}>
                     <TableRow>
@@ -654,48 +666,51 @@ const ManageCourses: React.FC = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {data?.courses.length ? (
-                      data.courses.map((course: Course) => (
-                        <TableRow key={course.$id} hover sx={{ "&:hover": { backgroundColor: "#d9eaff" } }}>
-                          <TableCell>
-                            <img
-                              src={course.ImageUrl}
-                              alt="Thumbnail"
-                              style={{ width: 100, height: 70, objectFit: "cover", borderRadius: 6, border: "1px solid #ccc" }}
-                            />
-                          </TableCell>
-                          <TableCell>{course.title}</TableCell>
-                          <TableCell>{course.category}</TableCell>
-                          <TableCell>₹{course.Price}</TableCell>
-                          <TableCell>{course.syllabus?.slice(0, 50)}...</TableCell>
-                          <TableCell align="center">
-                            <IconButton
-                              onClick={() => {
-                                setEditing(course);
-                                setOpen(true);
-                              }}
-                              color="primary"
-                            >
-                              <EditIcon />
-                            </IconButton>
-                            <IconButton
-                              onClick={() => {
-                                if (confirm("Delete this course?")) deleteMutation.mutate(course.$id);
-                              }}
-                              color="error"
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={6} align="center">
-                          No courses found
+                    {courses.map((course) => (
+                      <TableRow
+                        key={course.$id}
+                        hover
+                        sx={{ "&:hover": { backgroundColor: "#d9eaff" } }}
+                      >
+                        <TableCell>
+                          <img
+                            src={course.ImageUrl}
+                            alt="Thumbnail"
+                            style={{
+                              width: 100,
+                              height: 70,
+                              objectFit: "cover",
+                              borderRadius: 6,
+                              border: "1px solid #ccc",
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>{course.title}</TableCell>
+                        <TableCell>{course.category}</TableCell>
+                        <TableCell>₹{course.Price}</TableCell>
+                        <TableCell>{course.syllabus?.slice(0, 50)}...</TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            onClick={() => {
+                              setEditing(course);
+                              setOpen(true);
+                            }}
+                            color="primary"
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => {
+                              if (confirm("Delete this course?"))
+                                deleteCourse(course.$id);
+                            }}
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                         </TableCell>
                       </TableRow>
-                    )}
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -710,8 +725,15 @@ const ManageCourses: React.FC = () => {
                     shape="rounded"
                     size="large"
                     sx={{
-                      "& .MuiPaginationItem-root": { borderRadius: "12px", fontWeight: 600, boxShadow: "0px 2px 6px rgba(0,0,0,0.1)" },
-                      "& .Mui-selected": { backgroundColor: "#003366 !important", color: "#fff" },
+                      "& .MuiPaginationItem-root": {
+                        borderRadius: "12px",
+                        fontWeight: 600,
+                        boxShadow: "0px 2px 6px rgba(0,0,0,0.1)",
+                      },
+                      "& .Mui-selected": {
+                        backgroundColor: "#003366 !important",
+                        color: "#fff",
+                      },
                     }}
                   />
                 </Stack>
@@ -721,8 +743,133 @@ const ManageCourses: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Edit Dialog & Snackbar remain unchanged */}
+      {/* Edit Dialog */}
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Edit Course</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} mt={1}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">Course Image</Typography>
+              {editing?.ImageUrl && (
+                <img
+                  src={editing.ImageUrl}
+                  alt="Course Image"
+                  style={{ width: 150, height: 100, objectFit: "cover", borderRadius: 6 }}
+                />
+              )}
+              <Button variant="outlined" component="label">
+                Upload Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={async (e) => {
+                    if (!e.target.files?.[0] || !editing) return;
+                    const file = e.target.files[0];
+                    try {
+                      const res = await storage.createFile(
+                        APPWRITE_CONFIG.BUCKET_ID,
+                        ID.unique(),
+                        file
+                      );
+                      const imageUrl = `${APPWRITE_CONFIG.ENDPOINT}/storage/buckets/${APPWRITE_CONFIG.BUCKET_ID}/files/${res.$id}/view?project=${APPWRITE_CONFIG.PROJECT_ID}`;
+                      setEditing((c) => (c ? { ...c, ImageUrl: imageUrl } : c));
+                      setSnackbar("Image uploaded successfully!");
+                    } catch (err) {
+                      console.error(err);
+                      setSnackbar("Failed to upload image.");
+                    }
+                  }}
+                />
+              </Button>
+            </Stack>
 
+            <TextField
+              label="Title"
+              value={editing?.title ?? ""}
+              onChange={(e) =>
+                setEditing((c) => (c ? { ...c, title: e.target.value } : c))
+              }
+              fullWidth
+            />
+            <TextField
+              label="Description"
+              value={editing?.description ?? ""}
+              onChange={(e) =>
+                setEditing((c) =>
+                  c ? { ...c, description: e.target.value } : c
+                )
+              }
+              fullWidth
+              multiline
+              minRows={3}
+            />
+            <TextField
+              label="Syllabus"
+              value={editing?.syllabus ?? ""}
+              onChange={(e) =>
+                setEditing((c) => (c ? { ...c, syllabus: e.target.value } : c))
+              }
+              fullWidth
+              multiline
+              minRows={2}
+            />
+            <Stack direction="row" spacing={2}>
+              <TextField
+                type="number"
+                label="Price (₹)"
+                value={editing?.Price ?? 0}
+                onChange={(e) =>
+                  setEditing((c) =>
+                    c ? { ...c, Price: Number(e.target.value || 0) } : c
+                  )
+                }
+                fullWidth
+              />
+              <TextField
+                label="Category"
+                value={editing?.category ?? ""}
+                onChange={(e) =>
+                  setEditing((c) =>
+                    c ? { ...c, category: e.target.value } : c
+                  )
+                }
+                fullWidth
+              />
+            </Stack>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={() => editing && updateCourse(editing)}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={!!snackbar}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Box
+          sx={{
+            bgcolor: snackbar?.includes("failed") ? "#ff5252" : "#003366",
+            color: "#fff",
+            px: 3,
+            py: 1.5,
+            borderRadius: 2,
+            fontWeight: 500,
+            fontFamily: "Roboto, Arial, sans-serif",
+          }}
+        >
+          {snackbar}
+        </Box>
+      </Snackbar>
     </ThemeProvider>
   );
 };
