@@ -40,3 +40,14 @@ a {
     color-scheme: dark;
   }
 }
+
+
+/* Fix Sonner leaking styles */
+:root {
+  line-height: normal !important;
+  font-size: inherit !important;
+}
+
+[data-sonner-toaster] {
+  all: unset;
+}
