@@ -29,7 +29,11 @@ export default function HomePage() {
 
   return (
     <Wrapper>
+     {isLoggedIn ? (
       <EducationalWebsite />
+      ) : (
+        <EducationalWebsite />
+      )}
     </Wrapper>
   );
 }
