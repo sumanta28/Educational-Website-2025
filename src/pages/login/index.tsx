@@ -353,7 +353,6 @@
 //   );
 // }
 
-
 import { useAuth } from "@/components/AuthContext";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -406,85 +405,76 @@ export default function LoginPage() {
     }
   };
 
-  return (
+return (
   <Box
     sx={{
       minHeight: "100vh",
       display: "flex",
-      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       p: 2,
-      position: "relative",
     }}
   >
     <Card
       sx={{
         width: "100%",
-        maxWidth: 400,
+        maxWidth: 360,
         borderRadius: 4,
-        boxShadow: "0px 10px 30px rgba(0,0,0,0.3)",
+        boxShadow: "0px 12px 40px rgba(0,0,0,0.35)",
         backgroundColor: "#fff",
         position: "relative",
-        pt: 6, // to leave space for home button
+        pt: 4,
+        pb: 3,
       }}
     >
-      {/* Home button inside the card */}
+      {/* Home button */}
       <Button
         startIcon={<HomeIcon />}
         variant="text"
         onClick={() => router.push("/")}
         sx={{
           position: "absolute",
-          top: 16,
-          left: 16,
-          color: "#667eea", // matching gradient primary color
+          top: 12,
+          left: 12,
+          color: "#667eea",
           fontWeight: "bold",
           textTransform: "none",
-          "&:hover": {
-            textDecoration: "underline",
-            backgroundColor: "transparent",
-          },
+          "&:hover": { textDecoration: "underline", backgroundColor: "transparent" },
         }}
       >
         Home
       </Button>
 
-      <CardContent sx={{ p: 4 }}>
+      <CardContent sx={{ px: 3, pt: 1, pb: 2 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
-          <Avatar sx={{ bgcolor: "primary.main", mb: 2 }}>
+          <Avatar sx={{ bgcolor: "primary.main", mb: 1.5 }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography variant="h5" fontWeight="bold">
+          <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
             Welcome Back
           </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            align="center"
-            sx={{ mb: 3 }}
-          >
-            Login to continue and access your account
+          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
+            Login to continue
           </Typography>
         </Box>
 
         {error && (
-          <Typography color="error" align="center" sx={{ mb: 2 }}>
+          <Typography color="error" align="center" sx={{ mb: 1.5, fontSize: "0.875rem" }}>
             {error}
           </Typography>
         )}
 
         {loading ? (
-          <Box display="flex" justifyContent="center" my={4}>
-            <CircularProgress />
+          <Box display="flex" justifyContent="center" my={3}>
+            <CircularProgress size={28} />
           </Box>
         ) : (
           <form onSubmit={handleLogin}>
             <TextField
               fullWidth
               label="Email Address"
-              margin="normal"
+              margin="dense"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -493,7 +483,7 @@ export default function LoginPage() {
             <TextField
               fullWidth
               label="Password"
-              margin="normal"
+              margin="dense"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -505,38 +495,49 @@ export default function LoginPage() {
               type="submit"
               variant="contained"
               sx={{
-                mt: 3,
-                py: 1.2,
+                mt: 2.5,
+                py: 1.1,
                 fontWeight: "bold",
-                fontSize: "1rem",
-                borderRadius: "8px",
-                background:
-                  "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+                fontSize: "0.95rem",
+                borderRadius: 2,
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                boxShadow: "0px 4px 12px rgba(0,0,0,0.25)",
                 "&:hover": {
-                  background:
-                    "linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)",
+                  background: "linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)",
                 },
               }}
             >
               Login
             </Button>
 
-            <Divider sx={{ my: 3 }}>OR</Divider>
+            <Divider sx={{ my: 2 }}>OR</Divider>
 
             <Button
               fullWidth
               variant="text"
               sx={{
-                fontSize: "0.9rem",
+                fontSize: "0.85rem",
                 fontWeight: "medium",
                 color: "primary.main",
                 textTransform: "none",
               }}
               onClick={() => router.push("/register")}
             >
-              Don't have an account? <b>register</b>
+              Don't have an account? <b>Register</b>
             </Button>
+
+           <Typography
+              sx={{
+                mt: 1,
+                textAlign: "center",
+                cursor: "pointer",
+                color: "#667eea",
+                fontSize: "0.85rem",
+              }}
+              onClick={() => router.push("/forgot-password")}
+            >
+              Forgot Password?
+            </Typography>
           </form>
         )}
       </CardContent>
