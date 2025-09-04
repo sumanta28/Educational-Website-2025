@@ -586,16 +586,15 @@ export default function AddCourse() {
                     render={({ field, fieldState }) => (
                       <TextField
                         {...field}
-                        type="number"
-                        label="Price (₹)"
-                        value={field.value || ""} // shows empty when 0
+                        label="Course Title"
+                        placeholder="Enter course title"
                         error={!!fieldState.error}
                         helperText={fieldState.error?.message}
                         fullWidth
-                        inputProps={{ min: 0 }}
                       />
                     )}
                   />
+
                   <Controller
                     name="description"
                     control={control}
