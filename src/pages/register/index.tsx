@@ -564,7 +564,7 @@ const Register: React.FC = () => {
       await databases.createDocument(
         DATABASE_ID,
         STUDENT_COLLECTION_ID,
-        ID.unique(),
+        user.$id, // 🔹 use auth userId as docId
         profileData
       );
 
@@ -584,7 +584,6 @@ const Register: React.FC = () => {
       setLoading(false);
     }
   };
-
 
   return (
     <Box
