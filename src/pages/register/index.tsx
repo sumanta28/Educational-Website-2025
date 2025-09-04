@@ -479,6 +479,7 @@ import {
   Grid,
   Avatar,
 } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
 import { Client, Account, ID, Storage, Databases, Permission, Role } from "appwrite";
 
 // 🔹 Environment variables
@@ -597,7 +598,27 @@ const Register: React.FC = () => {
           backdropFilter: "blur(10px)",
         }}
       >
-        <CardContent sx={{ p: 4 }}>
+        <Button
+                startIcon={<HomeIcon />}
+                variant="text"
+                onClick={() => router.push("/")}
+                sx={{
+                  position: "absolute",
+                  top: 16,
+                  left: 16,
+                  color: "#667eea", // matching gradient primary color
+                  fontWeight: "bold",
+                  textTransform: "none ",
+                  "&:hover": {
+                    textDecoration: "underline",
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                Home
+              </Button>
+        
+        <CardContent sx={{ p: 10 }}>
           <Typography
             variant="h5"
             align="center"
