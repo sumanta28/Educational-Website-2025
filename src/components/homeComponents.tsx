@@ -759,7 +759,7 @@ const EducationalWebsite: React.FC = () => {
                 ),
                 value: stats.totalCourses,
                 suffix: "+",
-                label: "Expert Courses",
+                label: "Special Courses",
               },
               {
                 icon: (
