@@ -2054,19 +2054,15 @@ const CoursesComponent: React.FC = () => {
               </Button>
             )}
 
-            {enrolledCourses.has(selectedCourse.$id) ? (
-              <Button variant="outlined" color="success" disabled>
-                Enrolled
-              </Button>
-            ) : (
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => handleEnroll(selectedCourse)}
-              >
-                Enroll
-              </Button>
-            )}
+             {isLoggedIn && !enrolledCourses.has(selectedCourse.$id) && (
+    <Button
+      variant="outlined"
+      color="secondary"
+      onClick={() => handleEnroll(selectedCourse)}
+    >
+      Enroll
+    </Button>
+  )}
           </DialogActions>
         </Dialog>
       )}

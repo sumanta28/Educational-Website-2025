@@ -22,6 +22,9 @@ import {
   CssBaseline,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import Lottie from "lottie-react";
+import emptyAnimation from "@/lottie/empty.json"; // adjust path if needed
+
 
 type Course = Models.Document & {
   title: string;
@@ -234,8 +237,15 @@ const SearchPage: React.FC = () => {
         ) : error ? (
           <Typography color="error">{error}</Typography>
         ) : courses.length === 0 ? (
-          <Typography>No courses found.</Typography>
-        ) : (
+  <Box display="flex" flexDirection="column" alignItems="center" mt={4}>
+    <Lottie animationData={emptyAnimation} style={{ width: 300, height: 300 }} />
+    <Typography mt={2} variant="h6" color="text.secondary">
+      No courses found.
+    </Typography>
+  </Box>
+)
+
+         : (
           <Grid container spacing={3}>
             {courses.map((course) => (
               <Grid key={course.$id} size={{ xs: 6, sm: 4, md: 3, lg: 3 }}>

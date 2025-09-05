@@ -34,7 +34,7 @@ const team: TeamMember[] = [
     bio: "Expert in software architecture and development, ensuring our solutions are scalable and modern. Samik focuses on integrating the latest technologies for efficient solutions.",
   },
   {
-    name: "Bishal",
+    name: "Captain Price",
     role: "Designer",
     image: "/team/Bishal.jpg",
     bio: "Creating beautiful and user-friendly designs that enhance user experience. Bishal combines creativity and usability to make our products intuitive and engaging.",
